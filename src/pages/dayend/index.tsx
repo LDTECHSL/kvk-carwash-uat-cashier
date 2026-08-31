@@ -194,7 +194,14 @@ export default function Dayend() {
 
   const loadSummary = async (date: string) => {
     try {
-      const response = await getFinancialSummary(date, date);
+      const startDate = date;
+
+    const nextDate = new Date(date);
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    const endDate = nextDate.toISOString().split("T")[0];
+
+    const response = await getFinancialSummary(startDate, endDate);
       const summary =
         response?.additionalData?.response ??
         response?.response ??
@@ -1007,7 +1014,7 @@ export default function Dayend() {
       {/* Success Modal */}
       {showSuccessModal && (
         <DayEndSuccessModal
-          workingDate={dayEndData?.currentDate || defaultDate}
+          workingDate={dayEndData?.currentDate.toString()}
           totalRevenue={financialSummary.totalRevenue}
           actualCash={actualCash}
           formatPrice={formatPrice}
@@ -1332,13 +1339,12 @@ function CloseDayConfirmModal({
 
 function DayEndSuccessModal({
   workingDate,
-  totalRevenue,
   actualCash,
   formatPrice,
   formatDateDisplay,
   onContinue,
 }: {
-  workingDate: string;
+  workingDate: any;
   totalRevenue: number;
   actualCash: number;
   formatPrice: (price: number) => string;
@@ -1356,14 +1362,10 @@ function DayEndSuccessModal({
           Day End Completed
         </h2>
         <p className="mt-2 text-sm text-slate-500 leading-6">
-          The business day for <strong className="text-slate-800">{formatDateDisplay(workingDate)}</strong> has been successfully reconciled and closed.
+          Welcome to new day <strong className="text-slate-800">{formatDateDisplay(workingDate)}</strong> .
         </p>
 
         <div className="my-5 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left text-sm space-y-2">
-          <div className="flex justify-between">
-            <span className="text-slate-500">Total Revenue:</span>
-            <span className="font-bold text-slate-900">{formatPrice(totalRevenue)}</span>
-          </div>
           <div className="flex justify-between">
             <span className="text-slate-500">Cash Reconciled:</span>
             <span className="font-bold text-emerald-700">{formatPrice(actualCash)}</span>
